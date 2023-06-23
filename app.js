@@ -8,10 +8,12 @@ const connectDB=require('./server/config/db');
 const cookieParser=require('cookie-parser');
 const mongoStore=require('connect-mongo');
 const session=require('express-session');
+const methodOverride=require('method-override');
+
 
 
 app.use(express.static('public'));
-
+app.use(methodOverride('_method'));
 app.use(expressLayouts);
 app.set('layout','./layouts/main');
 app.set('view engine','ejs');
@@ -28,6 +30,8 @@ store:mongoStore.create({
     mongoUrl:process.env.MONGODB_URI
 }),  
 }))
+
+
 
 app.use('/',mainRoutes)
 app.use('/',adminRoutes)

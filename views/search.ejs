@@ -6,14 +6,19 @@
 
     <ul class="articles_ul">
 
-        <% data.forEach(blog => { %>
-            <li>
-                <a href="post/<%= blog._id %>">
-                    <span class="article_title"><%= blog.title %></span>
-                    <span class="article_date"><%= blog.createdAt.toDateString() %></span>
-                </a>
-            </li>
-        <% }) %>
+        <% if (data.length>0) { %>
+            <% data.forEach(blog => { %>
+                <li>
+                    <a href="post/<%= blog._id %>">
+                        <span class="article_title"><%= blog.title %></span>
+                        <span class="article_date"><%= blog.createdAt.toDateString() %></span>
+                    </a>
+                </li>
+            <% }) %>
+        <% }else{ %>
+
+            <h3 class="no-data">No data found</h3>
+            <% } %>
 
     </ul>
 

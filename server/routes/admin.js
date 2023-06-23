@@ -11,6 +11,7 @@ const jwtSecret=process.env.JWT_SECRET
 const authMiddleware=(req,res,next)=>{
     const token=req.cookies.token;
     if(!token){
+        res.redirect('/admin')
         return res.status(401).json({message:"unauthorized"});
     }
     try{
@@ -19,7 +20,7 @@ const authMiddleware=(req,res,next)=>{
         next()
     }
     catch(error){
-    
+            res.redirect('/admin')
             return res.status(401).json({message:"unauthorized"});
     }
 }
@@ -61,7 +62,7 @@ router.post('/register',async(req,res)=>{
         const hashedPassword = await bcrypt.hash(password,10);
         try{
             const user=await User.create({username,password:hashedPassword});
-            res.status(201).json({message:"user created",user})
+            res.redirect('/admin')
         }catch(error){
             if(error.code===11000){
                 res.status(409).json({message:"User already in use"});
@@ -77,11 +78,26 @@ router.post('/register',async(req,res)=>{
 //dashboard
 router.get('/dashboard',authMiddleware,async(req,res)=>{
     const pageInfo={
-        title:"Login",
-        description:"Login page"
+        title:"Dashboard",
+        description:"dashboard page"
     }
-    const data=await Post.find();
-    res.render('admin/dashboard',{layout:adminLayout,pageInfo,data})
+  
+    let perPage=5;
+    let page=req.query.page || 1;
+    const data=await Post.aggregate([{$sort:{createdAt:-1}}])
+    .skip(perPage*page-perPage)
+    .limit(perPage)
+    .exec();
+    const count = await Post.count();
+    const nextpage=page+1;
+    const hasNextpage=nextpage<=Math.ceil(count/perPage);
+    res.render('admin/dashboard',
+    {
+    layout:adminLayout,
+    pageInfo,
+    data,
+    nextPage:hasNextpage?nextpage:null
+    });
 })
 
 //add-post
@@ -90,7 +106,6 @@ router.get('/add-post',authMiddleware,(req,res)=>{
         title:"Add post",
         description:"Add post page"
     }
-    
     res.render('admin/add-post',{layout:adminLayout,pageInfo})
 })
 
@@ -104,6 +119,78 @@ router.post('/add-post',authMiddleware,async(req,res)=>{
         }
         await Post.create(newPost);
         res.redirect('/dashboard');
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
+//edit-post Get
+router.get('/edit-post/:id',authMiddleware,async(req,res)=>{
+    console.log(req.body);    
+    try{
+        const pageInfo={
+            title:"Edit post",
+            description:"Edit post page"
+        }
+        const data= await Post.findOne({_id:req.params.id});
+        res.render('admin/edit-post',{
+            pageInfo,
+            layout:adminLayout,
+            data
+        })
+       
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
+//edit-post request
+router.put('/edit-post/:id',authMiddleware,async(req,res)=>{  
+    try{
+       await Post.findByIdAndUpdate(req.params.id,{
+        title:req.body.title,
+        body:req.body.body,
+        updatedAt:Date.now()
+       });
+       res.redirect(`/edit-post/${req.params.id}`)
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
+//delete post
+router.delete('/delete-post/:id',authMiddleware,async(req,res)=>{  
+    try{
+       await Post.deleteOne({_id:req.params.id});
+       res.redirect('/dashboard');
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
+//logout
+router.get('/logout',async(req,res)=>{  
+    try{
+       res.clearCookie('token')
+       res.redirect('/');
+    }
+    catch(error){
+        console.log(error);
+    }
+})
+
+//get register
+router.get('/register-page',authMiddleware,async(req,res)=>{  
+    try{
+        const pageInfo={
+            title:"Register",
+            description:"Register page"
+        }
+       res.render('admin/register',{layout:adminLayout,pageInfo});
     }
     catch(error){
         console.log(error);

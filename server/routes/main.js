@@ -7,7 +7,8 @@ router.get('/',async (req,res)=>{
     try{
         const pageInfo={
             title:"Home",
-            description:"Home page"
+            description:"Home page",
+            currentRoute:'/'
         }
         let perPage=5;
         let page=req.query.page || 1;
@@ -54,7 +55,7 @@ router.post('/search',async(req,res)=>{
     try{
         const pageInfo={
             title:"Search",
-            description:"Post page"
+            description:"Search page"
         }
         let searchTerm=req.body.searchTerm;
         const searchNoSpeacialChar = searchTerm.replace(/[^a-zA-Z0-9]/g,"");
@@ -78,9 +79,20 @@ router.post('/search',async(req,res)=>{
 router.get('/about',(req,res)=>{
     const pageInfo={
         title:"Search",
-        description:"Post page"
+        description:"Post page",
+        currentRoute:'/about'
     }
     res.render('about',{pageInfo})
+})
+
+//contact page
+router.get('/contact',(req,res)=>{
+    const pageInfo={
+        title:"Contact",
+        description:"Contact page",
+        currentRoute:'/contact'
+    }
+    res.render('contact',{pageInfo})
 })
 
 module.exports=router;

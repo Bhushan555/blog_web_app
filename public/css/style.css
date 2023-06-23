@@ -140,7 +140,7 @@ figure img{
 }
 
 .nav_link.active{
-    color: #1C1C1Ca9;
+    color: #1c1c1c8f;
 }
 
 .author{
@@ -254,17 +254,25 @@ footer{
 
 .search_bar input{
     margin: 0;
-    padding: 0;
+    padding: 12px;
+}
+
+.search_bar input:focus-visible{
+    outline: none;
 }
 
 #searchClose{
     position: absolute;
     top: 0;
     right: 0;
-    padding: 15px;
-    color: gray;
+    padding: 18px;
+    color: rgb(212, 210, 210);
 }
 
+.no-data{
+    margin: 60px;
+    text-align: center;
+}
 .post_title{
     margin-top: 40px;
     font-size: 42px;
@@ -332,4 +340,25 @@ footer{
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
+}
+
+.new-register-btn{
+
+    padding-left: 40px;
+}
+
+.about{
+    font-weight: 500;
+    font-size: 20px;
+    margin: 40px 0;
+    line-height: 2;
+}
+
+.contact{
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.contact a{
+    color: #1c1c1cb8;
 }
